@@ -24,13 +24,13 @@ public class JumpState : PlayerBaseState
 
         // Play jump animation
         if (stateMachine.Animator != null)
-            stateMachine.Animator.Play("JumpAnimation");
+            stateMachine.Animator.Play("Jump");
         Debug.Log($"[JumpState] Entering Jump State at {enterTime:F2}s");
 
         // If grounded, set jumps to MaxJumps - 1 (so the ground jump counts as the first jump)
-        bool isWallJumpNow = stateMachine.IsTouchingWall() && !stateMachine.IsGrounded();
+        bool isWallJump = stateMachine.IsTouchingWall() && !stateMachine.IsGrounded();
 
-        if (isWallJumpNow)
+        if (isWallJump)
         {
             // Only allow wall jump if JumpsRemaining > 0
             if (stateMachine.JumpsRemaining > 0)
