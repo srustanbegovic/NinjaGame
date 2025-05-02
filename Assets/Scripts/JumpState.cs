@@ -6,7 +6,8 @@ public class JumpState : PlayerBaseState
     private float wallJumpHorizontalForce = 5f;
     private float enterTime;
     private bool hasJumped = false;
-    private bool isWallJump = false;
+    private bool isWallJumping = false;
+    float previousY;
 
     public JumpState(PlayerStateMachine stateMachine) : base(stateMachine)
     {
@@ -14,9 +15,10 @@ public class JumpState : PlayerBaseState
 
     public override void Enter()
     {
+        previousY = stateMachine.transform.position.y;
         enterTime = Time.time;
         hasJumped = false;
-        isWallJump = false;
+        //isWallJumping = false;
 
         // --- Start coyote time (grounded grace period) ---
         stateMachine.GetType().GetField("jumpGroundedGraceTimer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
@@ -28,9 +30,9 @@ public class JumpState : PlayerBaseState
         Debug.Log($"[JumpState] Entering Jump State at {enterTime:F2}s");
 
         // If grounded, set jumps to MaxJumps - 1 (so the ground jump counts as the first jump)
-        bool isWallJump = stateMachine.IsTouchingWall() && !stateMachine.IsGrounded();
+        bool isWallJumping = stateMachine.IsTouchingWall() && !stateMachine.IsGrounded();
 
-        if (isWallJump)
+        if (isWallJumping)
         {
             // Only allow wall jump if JumpsRemaining > 0
             if (stateMachine.JumpsRemaining > 0)
@@ -41,7 +43,7 @@ public class JumpState : PlayerBaseState
                     stateMachine.RB.linearVelocity = Vector2.zero;
                     stateMachine.RB.AddForce(new Vector2(wallJumpDir.x * wallJumpHorizontalForce, stateMachine.WallJumpForce), ForceMode2D.Impulse);
                     hasJumped = true;
-                    isWallJump = true;
+                    isWallJumping = true;
                     stateMachine.JumpsRemaining = Mathf.Max(0, stateMachine.JumpsRemaining - 1);
                     Debug.Log("[JumpState] Wall Jump performed. Jumps left: " + stateMachine.JumpsRemaining);
                 }
@@ -123,9 +125,14 @@ public class JumpState : PlayerBaseState
         // If not grounded and not touching wall, transition to FallState
         if (!stateMachine.IsGrounded() && !stateMachine.IsTouchingWall())
         {
-            stateMachine.SwitchState(stateMachine.FallState);
-            return;
+            if(previousY>stateMachine.transform.position.y)
+            {
+                stateMachine.SwitchState(stateMachine.FallState);
+                return;
+            }
         }
+
+        previousY = stateMachine.transform.position.y;
     }
 
     public override void Exit()

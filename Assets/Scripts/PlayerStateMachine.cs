@@ -66,6 +66,7 @@ public class PlayerStateMachine : MonoBehaviour
     // Component References (Example)
     public Rigidbody2D RB { get; private set; }
     public Animator Animator { get; private set; }
+    public SpriteRenderer sprite; 
     // Add InputReader reference if using one
 
     // State transition event
@@ -87,6 +88,7 @@ public class PlayerStateMachine : MonoBehaviour
         // Get Components
         RB = GetComponent<Rigidbody2D>();
         Animator = GetComponentInChildren<Animator>(); // Or GetComponent<Animator>()
+        sprite = GetComponentInChildren<SpriteRenderer>();
         if (playerCollider == null)
         {
             playerCollider = GetComponent<CapsuleCollider2D>();
@@ -144,6 +146,16 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Update()
     {
+        Vector2 direction = InputReader.GetMovementInput();
+        if (direction.x < 0)
+        {
+            sprite.flipX = true;
+
+        }
+        else if(direction.x >0)
+        {
+            sprite.flipX = false; 
+        }
         // Update coyote time timer
         if (jumpGroundedGraceTimer > 0f)
             jumpGroundedGraceTimer -= Time.deltaTime;

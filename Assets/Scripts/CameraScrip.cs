@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class CameraFollow : MonoBehaviour
+public class CameraScrip : MonoBehaviour
 {
-    Vector3 offset;
+    public Vector3 offset;
     GameObject player;
     void Start()
     {
@@ -12,6 +12,6 @@ public class CameraFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = player.transform.posistion; 
+        transform.position = player.transform.position + offset; 
     }
 }
