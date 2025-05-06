@@ -10,14 +10,16 @@ public class WallClingState : PlayerBaseState
 
     public override void Enter()
     {
+        
         enterTime = Time.time;
         jumpHeldOnEnter = stateMachine.InputReader.IsJumpPressed();
         Debug.Log($"[WallClingState] Entering Wall Cling State at {enterTime:F2}s");
 
-        // Optional: Play wall cling animation
-        // if (stateMachine.Animator != null)
-        //     stateMachine.Animator.Play("WallClingAnimation"); // Replace with your animation name
-
+        //Optional: Play wall cling animation
+         if (stateMachine.Animator != null)
+         {
+             stateMachine.Animator.Play("Cling"); // Replace with your animation name
+         }
         // Reduce initial vertical velocity slightly to make the cling feel better
         if (stateMachine.RB != null)
         {
@@ -28,6 +30,14 @@ public class WallClingState : PlayerBaseState
     public override void Tick(float deltaTime)
     {
         // Check for Shoot input first
+
+        stateMachine.RB.constraints = RigidbodyConstraints2D.FreezePositionX;
+        if (stateMachine.InputReader.IsJumpPressed())
+        {
+            stateMachine.RB.constraints = (stateMachine.RB.constraints & ~RigidbodyConstraints2D.FreezePositionX) | RigidbodyConstraints2D.FreezeRotation; 
+            stateMachine.SwitchState(stateMachine.JumpState);
+        }
+        //if (stateMachine.InputReader.)
         if (stateMachine.InputReader.IsShootPressed()) // Use InputReader property
         {
             stateMachine.SwitchState(stateMachine.ShootState);
@@ -46,6 +56,7 @@ public class WallClingState : PlayerBaseState
         if (stateMachine.InputReader.IsJumpPressed() && !jumpHeldOnEnter)
         {
             // Transition to JumpState, which should handle the wall jump logic
+            stateMachine.RB.constraints &= ~RigidbodyConstraints2D.FreezePositionX; 
             stateMachine.SwitchState(stateMachine.JumpState);
             return; // Exit early after state switch
         }
@@ -58,7 +69,7 @@ public class WallClingState : PlayerBaseState
         // Check if grounded
         if (stateMachine.IsGrounded())
         {
-            // Always reset jumps when grounded
+            stateMachine.RB.constraints = (stateMachine.RB.constraints & ~RigidbodyConstraints2D.FreezePositionX) | RigidbodyConstraints2D.FreezeRotation; 
             stateMachine.JumpsRemaining = stateMachine.MaxJumps;
             Vector2 moveInput = stateMachine.InputReader.GetMovementInput();
             if (moveInput == Vector2.zero)
@@ -73,7 +84,9 @@ public class WallClingState : PlayerBaseState
         // Check if no longer touching the wall
         if (!stateMachine.IsTouchingWall())
         {
-            // Transition to FallState when losing wall contact
+        
+            stateMachine.RB.constraints = (stateMachine.RB.constraints & ~RigidbodyConstraints2D.FreezePositionX) | RigidbodyConstraints2D.FreezeRotation; 
+        
             stateMachine.SwitchState(stateMachine.FallState);
             return;
         }
@@ -91,6 +104,7 @@ public class WallClingState : PlayerBaseState
     public override void Exit()
     {
         Debug.Log($"[WallClingState] Exiting Wall Cling State after {Time.time - enterTime:F2}s");
+        stateMachine.gyat = 0.3f;
         // Reset gravity if it was modified, or ensure velocity isn't stuck at slideSpeed
         // The JumpState or other subsequent states should handle setting appropriate velocities.
     }

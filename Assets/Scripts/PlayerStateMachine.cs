@@ -74,6 +74,7 @@ public class PlayerStateMachine : MonoBehaviour
     public event StateChangedEvent OnStateChanged;
 
     // State duration tracking
+    public float gyat = 0f;
     private float stateEnterTime;
     public float GetStateDuration()
     {
@@ -146,6 +147,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Update()
     {
+        gyat -= Time.deltaTime;
         Vector2 direction = InputReader.GetMovementInput();
         if (direction.x < 0)
         {
@@ -228,11 +230,19 @@ public class PlayerStateMachine : MonoBehaviour
     public bool IsTouchingWall()
     {
         // Wall detection using 2D raycast
-        float wallCheckDistance = 0.1f; // How far to check
-        Vector2 direction = transform.localScale.x > 0 ? Vector2.right : Vector2.left; // Check based on facing direction
-        RaycastHit2D hit = Physics2D.Raycast(playerCollider.bounds.center, direction, playerCollider.bounds.extents.x + wallCheckDistance, groundLayer);
-        Debug.DrawRay(playerCollider.bounds.center, direction * (playerCollider.bounds.extents.x + wallCheckDistance), hit.collider != null ? Color.green : Color.red);
-        return hit.collider != null;
+        if(gyat<0)
+        {
+            float wallCheckDistance = 0.2f; // How far to check
+            Vector2 direction = transform.localScale.x > 0 ? Vector2.right : Vector2.left; // Check based on facing direction
+            RaycastHit2D hit = Physics2D.Raycast(playerCollider.bounds.center, direction, playerCollider.bounds.extents.x + wallCheckDistance, groundLayer);
+            Debug.DrawRay(playerCollider.bounds.center, direction * (playerCollider.bounds.extents.x + wallCheckDistance), hit.collider != null ? Color.green : Color.red);
+            return hit.collider != null;
+        }
+        else;
+        {
+            return false;
+        }
+    
     }
 
     public void SetColliderCrouching()

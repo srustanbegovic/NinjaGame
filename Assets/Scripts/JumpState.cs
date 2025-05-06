@@ -116,9 +116,10 @@ public class JumpState : PlayerBaseState
     
         // Check if falling against a wall -> transition to Wall Cling
         // (Check velocity to ensure we are not moving upwards into the wall)
-        if (stateMachine.IsTouchingWall() && stateMachine.RB.linearVelocity.y <= 0)
+        if (stateMachine.IsTouchingWall())
         {
             stateMachine.SwitchState(stateMachine.WallClingState);
+            
             return;
         }
 

@@ -39,7 +39,7 @@ public class FallState : PlayerBaseState
         }
 
         // If touching wall and falling, transition to WallClingState
-        if (stateMachine.IsTouchingWall() && stateMachine.RB.linearVelocity.y <= 0)
+        if (stateMachine.IsTouchingWall())
         {
             stateMachine.SwitchState(stateMachine.WallClingState);
             return;
