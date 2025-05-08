@@ -31,7 +31,7 @@ public class WallClingState : PlayerBaseState
     {
         // Check for Shoot input first
 
-        stateMachine.RB.constraints = RigidbodyConstraints2D.FreezePositionX;
+        stateMachine.RB.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
         if (stateMachine.InputReader.IsJumpPressed())
         {
             stateMachine.RB.constraints = (stateMachine.RB.constraints & ~RigidbodyConstraints2D.FreezePositionX) | RigidbodyConstraints2D.FreezeRotation; 
@@ -56,7 +56,7 @@ public class WallClingState : PlayerBaseState
         if (stateMachine.InputReader.IsJumpPressed() && !jumpHeldOnEnter)
         {
             // Transition to JumpState, which should handle the wall jump logic
-            stateMachine.RB.constraints &= ~RigidbodyConstraints2D.FreezePositionX; 
+            stateMachine.RB.constraints = RigidbodyConstraints2D.FreezeRotation; 
             stateMachine.SwitchState(stateMachine.JumpState);
             return; // Exit early after state switch
         }

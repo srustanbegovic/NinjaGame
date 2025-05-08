@@ -149,14 +149,16 @@ public class PlayerStateMachine : MonoBehaviour
     {
         gyat -= Time.deltaTime;
         Vector2 direction = InputReader.GetMovementInput();
-        if (direction.x < 0)
+        if (currentState != WallClingState)
         {
-            sprite.flipX = true;
-
-        }
-        else if(direction.x >0)
-        {
-            sprite.flipX = false; 
+            if (direction.x < 0)
+            {
+                sprite.flipX = true;
+            }
+            else if(direction.x >0)
+            {
+                sprite.flipX = false; 
+            }
         }
         // Update coyote time timer
         if (jumpGroundedGraceTimer > 0f)
@@ -232,7 +234,7 @@ public class PlayerStateMachine : MonoBehaviour
         // Wall detection using 2D raycast
         if(gyat<0)
         {
-            float wallCheckDistance = 0.2f; // How far to check
+            float wallCheckDistance = 0.05f; // How far to check
             Vector2 direction = transform.localScale.x > 0 ? Vector2.right : Vector2.left; // Check based on facing direction
             RaycastHit2D hit = Physics2D.Raycast(playerCollider.bounds.center, direction, playerCollider.bounds.extents.x + wallCheckDistance, groundLayer);
             Debug.DrawRay(playerCollider.bounds.center, direction * (playerCollider.bounds.extents.x + wallCheckDistance), hit.collider != null ? Color.green : Color.red);
